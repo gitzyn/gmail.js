@@ -1235,7 +1235,7 @@ var Gmail = function(localJQuery) {
                 let data = item["1"]["4"] || "";
 
                 res.push({
-                    attachment_id: item["1"]["2"],
+                    id: item["1"]["2"],
                     name: data["3"],
                     type: data["4"],
                     url: api.tools.check_fd_attachment_url(data["2"]),
@@ -2657,7 +2657,7 @@ var Gmail = function(localJQuery) {
         {
             var a = ad[i];
             attachments.push({
-                attachment_id: a[0],
+                id: a[0],
                 name: a[1],
                 type: a[2],
                 size: a[3],
