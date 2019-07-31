@@ -1249,9 +1249,11 @@ var Gmail = function(localJQuery) {
 
     api.tools.check_fd_attachment_url = function(url) {
         var userAccountUrlPart = api.tracker.globals[7];
-        if (url.indexOf(userAccountUrlPart) < 0) {
+        if (url && userAccountUrlPart && url.indexOf(userAccountUrlPart) < 0) {
             url = url.replace('/mail/?', userAccountUrlPart + '?');
         }
+
+        return url;
     };
 
     api.tools.parse_fd_request_html_payload = function(fd_email) {
@@ -1397,7 +1399,7 @@ var Gmail = function(localJQuery) {
         try
         { 
             let sent_email = json;
-            console.log(sent_email);
+            //console.log(sent_email);
 
             const sent_email_id = sent_email["1"];
 
@@ -1410,12 +1412,13 @@ var Gmail = function(localJQuery) {
 
             const sent_attachments = api.tools.parse_sent_message_attachments(sent_email["12"]);
 
-            const sent_from = api.tools.parse_fd_email2(sent_email["2"])
+            const sent_from = api.tools.parse_fd_email2(sent_email["2"]);
             const sent_to = api.tools.parse_fd_email(sent_email["3"]);
             const sent_cc = api.tools.parse_fd_email(sent_email["4"]);
             const sent_bcc = api.tools.parse_fd_email(sent_email["5"]);
 
             const email = {
+                1: sent_email_id,                        
                 id: sent_email_id,
                 subject: sent_email_subject,
                 timestamp: sent_email_timestamp,
@@ -1436,7 +1439,7 @@ var Gmail = function(localJQuery) {
             console.warn("Gmail.js encountered an error trying to parse sent message!", error);
             return null;
         }
-    }
+    };
 
     api.tools.parse_request_payload = function(params, events, force) {
         const pathname = api.tools.get_pathname_from_url(params.url_raw);
@@ -1635,37 +1638,23 @@ var Gmail = function(localJQuery) {
         const c = api.cache;
 
         for (let email of email_data) {
+            // cache email directly on IDs
             c.emailIdCache[email.id] = email;
             c.emailLegacyIdCache[email.legacy_email_id] = email;
-        }
 
-        const threadIds = [];
-        for (let email of email_data) {
-            if (threadIds.indexOf(email.thread_id) === -1) {
-                threadIds.push(email.thread_id);
+            // ensure we have a thread-object before appending emails to it!
+            let thread = c.threadCache[email.thread_id];
+            if (!thread) {
+                thread = {
+                    thread_id: email.thread_id,
+                    emails: []
+                };
+                c.threadCache[email.thread_id] = thread;
             }
-        }
 
-        for (let threadId of threadIds) {
-            let emails = email_data.filter(i => i.thread_id === threadId);
-            let firstEmail = emails[0];
-
-            if (firstEmail) {
-                let thread_id = firstEmail.thread_id;
-                let thread = c.threadCache[thread_id];
-                if (!thread) {
-                    thread = {
-                        thread_id: thread_id,
-                        emails: []
-                    };
-                    c.threadCache[thread_id] = thread;
-                }
-
-                for (let email of emails) {
-                    if (thread.emails.filter(i => i.id === email.id).length === 0) {
-                        thread.emails.push(email);
-                    }
-                }
+            // only append email to cache if not already there.
+            if (thread.emails.filter(i => i.id === email.id).length === 0) {
+                thread.emails.push(email);
             }
         }
     };
