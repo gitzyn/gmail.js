@@ -1236,6 +1236,7 @@ var Gmail = function(localJQuery) {
 
                 res.push({
                     id: item["1"]["2"],
+                    attachment_id: item["1"]["2"],
                     name: data["3"],
                     type: data["4"],
                     url: api.tools.check_fd_attachment_url(data["2"]),
@@ -1384,6 +1385,7 @@ var Gmail = function(localJQuery) {
                 
                 res.push({
                     id: item["5"],
+                    attachment_id: item["5"],
                     name: item["2"],
                     type: item["1"],
                     url: item["6"],
@@ -2646,6 +2648,7 @@ var Gmail = function(localJQuery) {
         {
             var a = ad[i];
             attachments.push({
+                attachment_id: a[0],
                 id: a[0],
                 name: a[1],
                 type: a[2],
@@ -3528,7 +3531,7 @@ var Gmail = function(localJQuery) {
         }
 
         if (typeof element === "string") {
-            if (element.substring(0,3) == 'msg') {
+            if (element.substring(0,3) === 'msg') {
                 this.id = element;
                 element = $("div.adn[data-message-id='#" + this.id + "']");
             } else {
