@@ -1,6 +1,24 @@
 
 # Changelog
 
+## Version 0.9.9
+
+- add support for getting visible emails through DOM
+  (replaces api.get.visible_emails())
+
+## Version 0.9.8
+
+- add support for parsing sent email data in new Gmail.
+- add norwegian localizations.
+- fix attachment URLs in non-primary gmail accounts.
+- fix emails-property in gmail.new.get.thread_data().
+- fix incorrect email counts in gmail.get.unread_emails() and related functions.
+- add thread_id() function to DOM compose instances.
+
+## Version 0.9.7
+
+- fix issues with crash when invoked in cross-origin context.
+
 ## Version 0.9.6
 
 - add support for closing compose-windows.
